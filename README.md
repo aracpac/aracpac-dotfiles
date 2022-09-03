@@ -1,11 +1,11 @@
 These dotfiles are optimized for the following tools:
 
-* bash (a modern version with `readarray`, which means the version shipped with macOS is not compatible)
+* bash
 * tmux
 * vim
 * [alacritty](https://github.com/alacritty/alacritty)
 
-It includes the following submodules:
+The repo includes the following submodules:
 
 * bash [liquidprompt](https://github.com/nojhan/liquidprompt)
 * tmux [tpm](https://github.com/tmux-plugins/tpm)
@@ -13,9 +13,14 @@ It includes the following submodules:
 
 # Installation
 
-You should probably just manually symlink the files.
+You should probably just manually symlink the files then run the below to install the Vim and tmux plugins:
+```
+vim --clean '+source ~/.vimrc' +PluginInstall +qall
+.tmux/plugins/tpm/scripts/install_plugins.sh
+```
 
-If you like living life on the edge (and after you've scrutinized the code) you can use `symlinkctl` to do it for you.
+Alternatively, if you like living life on the edge (and after you've scrutinized the code) you can use `symlinkctl` to
+do that for you.
 
 ```
 ./symlinkctl enable
@@ -28,7 +33,9 @@ And to remove the symlinks:
 ```
 
 `symlinkctl` tries to be smart, portable, and non-destructive (eg, by backing up your existing files) but as with most
-shell scripts, I'm sure it will break on some configurations ¯\_(ツ)_/¯.
+shell scripts, it will probably break on some configurations ¯\_(ツ)_/¯. It expects a modern version of bash, with
+`readarray`, `grep` with the `-P` flag, and `readlink` with the `-f` flag. These requirements mean that it will not work
+on macOS, unless you have explicitly installed an updated bash, GNU grep, and GNU readlink.
 
 # Dependancies
 
@@ -40,10 +47,8 @@ for `grep` and `readlink` mean that you'll need to install the GNU versions and 
 * date
 * [delta](https://github.com/dandavison/delta)
 * git
-* grep (with -P support)
 * logname
 * ps
-* readlink (with -f support)
 * sed
 * tmux
 * tput
