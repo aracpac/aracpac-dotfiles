@@ -1,0 +1,28 @@
+[add.interactive]
+    useBuiltin = false
+
+[core]
+    pager = delta
+    excludesfile = ~/.gitignore
+
+[delta]
+    light = false
+    line-numbers = true
+    navigate = true # use n and N to move between diff sections
+
+[color]
+    ui = always
+
+[diff]
+    colorMoved = default
+    compactionHeuristic = true
+
+[interactive]
+    diffFilter = delta --color-only
+
+[merge]
+    conflictstyle = diff3
+
+[mergetool]
+    keepBackup = true
+

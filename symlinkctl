@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Creates symbolic links for all dotfiles and directories in this directory to your home directory. Modifying
+# $FILES_NOT_TO_SYMLINK_REGEX to exclude items from being symlinked. If a file with the same name already exists in your
+# home directory, it will be backed-up with .backup extension.
+
+# ## Configuration variables ############################################################################################
+FILES_NOT_TO_SYMLINK_REGEX="git|gitignore|gitmodules|idea|README.md|symlinkctl"
+TOP_LEVEL_DIRECTORIES_TO_SYMLINK=("./.liquidprompt" "./.tmux")
+TOP_LEVEL_DIRECTORIES_TO_TRAVERSE=("./" "./.ssh/" "./.vim/")
+########################################################################################################################
+
+# $1 - pwd
+# $2 - absolute home path
+# $3 - dotfile path relative to pwd
+enable() {
+
+  local DEST DOTFILE FILES_TO_SYMLINK GREP_STRING I SOURCE TYPE_STRING
+
+  mkdir -p "$2"/"$3"
+  GREP_STRING="\w\b(?<!$FILES_NOT_TO_SYMLINK_REGEX)$"
+  if [[ $3 == "./" ]]; then TYPE_STRING="-type f"; fi
+  readarray -t FILES_TO_SYMLINK <<<"$(find "$3" -maxdepth 1 $TYPE_STRING | grep -P "$GREP_STRING")"
+  if [[ $3 == "./" ]]; then
+    FILES_TO_SYMLINK+=("${TOP_LEVEL_DIRECTORIES_TO_SYMLINK[@]}")
+  fi
+  for DOTFILE in "${FILES_TO_SYMLINK[@]}"; do
+    DOTFILE="${DOTFILE#"$3"}"
+    SOURCE=$(readlink -f "$1/$3$DOTFILE")
+    DEST=$(readlink -f "$2/$3$DOTFILE")
+    # if the file exists in the home directory
+    if [[ -e "$DEST" ]]; then
+      # and the file that exists isn't already a symlink to the source file
+      if [[ "$DEST" != "$SOURCE" ]]; then
+        I=0
+        while true; do
+          I=$((I + 1))
+          # find a unique name for the backup file
+          if [[ -e "$DEST.$I.backup" ]]; then
+            continue
+          else
+            # backup the file
+            if mv "$DEST" "$DEST.$I.backup"; then
+              printf "\e[0;33m  %s → %s\n" "$DEST" "$DEST.$I.backup"
+              # and create the symlink
+              if ln -fs "$SOURCE" "$DEST"; then
+                printf "\e[0;33m  [✔] %s → %s\e[0m\n" "$SOURCE" "$DEST"
+              else
+                printf "\e[0;31m  [✖] %s → %s\e[0m\n" "$SOURCE" "$DEST"
+              fi
+              break
+            else
+              printf "\e[0;31m  could not copy %s → %s, exiting out of paranoia\n" "$DEST" "$DEST.$I.backup"
+              exit 1
+            fi
+          fi
+        done
+      else
+        printf "\e[0;32m  [✔] %s is already linked \e[0m\n" "$DEST"
+      fi
+    else
+      # otherwise, create the symlink
+      if ln -fs "$SOURCE" "$DEST"; then
+        printf "\e[0;33m  [✔] %s → %s\e[0m\n" "$SOURCE" "$DEST"
+      else
+        printf "\e[0;31m  [✖] %s → %s\e[0m\n" "$SOURCE" "$DEST"
+      fi
+    fi
+  done
+}
+
+disable() {
+  local FILES_TO_UNLINK LINK_TARGET
+  readarray -t FILES_TO_UNLINK <<<"$(find ~ -maxdepth 2 -type l)"
+  for LINKED_FILE in "${FILES_TO_UNLINK[@]}"; do
+    LINK_TARGET=$(readlink -f "$LINKED_FILE")
+    if [[ $LINK_TARGET == $(pwd)* ]]; then
+      printf "\e[0;33m [✔] removing linked file %s\e[0m\n" "$LINKED_FILE"
+      rm "$LINKED_FILE"
+    fi
+  done
+}
+
+if [[ "$1" == "enable" ]]; then
+  mkdir -p ~/.ssh/control
+  for SYMLINK_PATH in "${TOP_LEVEL_DIRECTORIES_TO_TRAVERSE[@]}"; do
+    enable "$(pwd)" "$HOME" "$SYMLINK_PATH"
+  done
+  exit 0
+fi
+
+if [[ "$1" == "disable" ]]; then
+  disable
+  exit 0
+fi
+
+printf "\e[0;31m\n  Please enter an argument:\n\n \tenable:\t enable dotfiles by adding symlinks in your home directory\n\n \tdisable: disable dotfiles by removing the symlinks from your home directory \e[0m \n\n"
+exit 0

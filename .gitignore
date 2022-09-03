@@ -1,0 +1,6 @@
+.idea
+.vim/bundle/
+!.vim/bundle/Vundle.vim
+.tmux/resurrect
+.tmux/plugins/*
+!.tmux/plugins/tpm
