@@ -7,13 +7,7 @@ These dotfiles are optimized for the following tools:
 
 It includes the following submodules:
 
-* vim [eunuch](https://github.com/tpope/vim-eunuch)
-* vim [gitgutter](https://github.com/airblade/vim-gitgutter)
 * bash [liquidprompt](https://github.com/nojhan/liquidprompt)
-* vim [nerdtree](https://github.com/preservim/nerdtree)
-* vim [papercolor-theme](https://github.com/NLKNguyen/papercolor-theme)
-* vim [polyglot](https://github.com/sheerun/vim-polyglot)
-* vim [powerline](https://github.com/powerline/powerline)
 * tmux [tpm](https://github.com/tmux-plugins/tpm)
 * vim [Vundle](https://github.com/VundleVim/Vundle.vim)
 
@@ -48,7 +42,6 @@ for `grep` and `readlink` mean that you'll need to install the GNU versions and 
 * git
 * grep (with -P support)
 * logname
-* powerline
 * ps
 * readlink (with -f support)
 * sed
