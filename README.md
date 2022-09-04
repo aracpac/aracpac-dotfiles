@@ -7,13 +7,16 @@ as submodules, so make sure to clone with `--recursive` or run `git submodule up
 # Installation
 
 ## Manual
+
 Symlink the files your home directory then install the Vim and tmux plugins by running:
+
 ```
 vim --clean '+source ~/.vimrc' +PluginInstall +qall
 .tmux/plugins/tpm/scripts/install_plugins.sh
 ```
 
 ## Automatic
+
 Alternatively, you can use `symlinkctl` to do all of that for you:
 
 ```
