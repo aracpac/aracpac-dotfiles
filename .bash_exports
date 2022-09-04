@@ -1,6 +1,5 @@
 #!/bin/bash
 
-LS_COLORS="$(vivid generate ayu)"
 LESS_TERMCAP_mb=$(tput -T ansi blink) # start bold
 LESS_TERMCAP_md=$(tput -T ansi setaf 2 ; tput -T ansi bold) # start bold
 LESS_TERMCAP_me=$(tput -T ansi sgr0) # turn off bold, blink and underline
@@ -21,7 +20,6 @@ export EDITOR="vim"
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 export MANPAGER="less -X"
-export LS_COLORS
 export LESS_TERMCAP_mb
 export LESS_TERMCAP_md
 export LESS_TERMCAP_me

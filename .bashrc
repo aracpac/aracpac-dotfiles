@@ -8,6 +8,10 @@ for file in ~/.{bash_exports,bash_functions,bash_aliases,bash_prompt,bash_local}
 done
 unset file
 
+# export LS_COLORS AFTER we've sourced everything else and have an updated $PATH
+LS_COLORS="$(vivid generate ayu)"
+export LS_COLORS
+
 # ensure the userspace programs we expect are installed
 check_for_userspace_commands
 
@@ -15,7 +19,6 @@ check_for_userspace_commands
 if [ -f /usr/share/bash-completion/bash_completion ]; then
   . /usr/share/bash-completion/bash_completion
 fi
-
 
 # allow local connections to X as root
 if xset q &>/dev/null; then
