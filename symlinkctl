@@ -3,10 +3,23 @@
 # $FILES_NOT_TO_SYMLINK_REGEX to exclude items from being symlinked. If a file with the same name already exists in your
 # home directory, it will be backed-up with .backup extension.
 
-# ## Configuration variables ############################################################################################
+# ## configuration variables ############################################################################################
 FILES_NOT_TO_SYMLINK_REGEX="git|gitignore|gitmodules|idea|README.md|symlinkctl"
 TOP_LEVEL_DIRECTORIES_TO_SYMLINK=("./.liquidprompt" "./.tmux")
 TOP_LEVEL_DIRECTORIES_TO_TRAVERSE=("./" "./.ssh/" "./.vim/")
+########################################################################################################################
+
+# ## macOS support #####################################################################################################
+if test "$(uname)" -eq 'Darwin'; then
+  if command -v ggrep greadlink > /dev/null; then
+    unalias grep readlink
+    shopt -s expand_aliases
+    alias grep=ggrep readlink=greadlink
+  else
+    printf "\e[0;31m\n Please install coreutils (https://formulae.brew.sh/formula/coreutils) before running this script.\n\e[0m"
+    exit 1
+  fi
+fi
 ########################################################################################################################
 
 # $1 - pwd
@@ -19,7 +32,8 @@ enable() {
   mkdir -p "$2"/"$3"
   GREP_STRING="\w\b(?<!$FILES_NOT_TO_SYMLINK_REGEX)$"
   if [[ $3 == "./" ]]; then TYPE_STRING="-type f"; fi
-  readarray -t FILES_TO_SYMLINK <<<"$(find "$3" -maxdepth 1 $TYPE_STRING | grep -P "$GREP_STRING")"
+  # shellcheck disable=SC2207 disable=SC2086
+  FILES_TO_SYMLINK=($(find "$3" -maxdepth 1 $TYPE_STRING | grep -P "$GREP_STRING" | tr '\n' ' '))
   if [[ $3 == "./" ]]; then
     FILES_TO_SYMLINK+=("${TOP_LEVEL_DIRECTORIES_TO_SYMLINK[@]}")
   fi
@@ -70,7 +84,8 @@ enable() {
 
 disable() {
   local FILES_TO_UNLINK LINK_TARGET
-  readarray -t FILES_TO_UNLINK <<<"$(find ~ -maxdepth 2 -type l)"
+  # shellcheck disable=SC2207
+  FILES_TO_UNLINK=($(find ~ -maxdepth 2 -type l | tr '\n' ' '))
   for LINKED_FILE in "${FILES_TO_UNLINK[@]}"; do
     LINK_TARGET=$(readlink -f "$LINKED_FILE")
     if [[ $LINK_TARGET == $(pwd)* ]]; then
@@ -85,7 +100,7 @@ if [[ "$1" == "enable" ]]; then
   for SYMLINK_PATH in "${TOP_LEVEL_DIRECTORIES_TO_TRAVERSE[@]}"; do
     enable "$(pwd)" "$HOME" "$SYMLINK_PATH"
   done
-   # run vim bypassing config files so options related to uninstalled plugins don't error out, then install plugins
+  # run vim bypassing config files so options related to uninstalled plugins don't error out, then install plugins
   vim --clean '+source ~/.vimrc' +PluginInstall +qall
   .tmux/plugins/tpm/scripts/install_plugins.sh
   exit 0
