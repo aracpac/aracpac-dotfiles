@@ -1,7 +1,7 @@
 so ~/.vim/plugins.vim
 
 " plugins
-colorscheme PaperColor
+:silent! colorscheme PaperColor
 let g:airline_powerline_fonts = 1
 let g:gitgutter_terminal_reports_focus=0
 let NERDTreeShowHidden=1

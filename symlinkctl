@@ -10,7 +10,7 @@ TOP_LEVEL_DIRECTORIES_TO_TRAVERSE=("./" "./.ssh/" "./.vim/")
 ########################################################################################################################
 
 # ## macOS support #####################################################################################################
-if test "$(uname)" -eq 'Darwin'; then
+if test "$(uname)" == "Darwin"; then
   if command -v ggrep greadlink > /dev/null; then
     unalias grep readlink
     shopt -s expand_aliases
@@ -100,8 +100,7 @@ if [[ "$1" == "enable" ]]; then
   for SYMLINK_PATH in "${TOP_LEVEL_DIRECTORIES_TO_TRAVERSE[@]}"; do
     enable "$(pwd)" "$HOME" "$SYMLINK_PATH"
   done
-  # run vim bypassing config files so options related to uninstalled plugins don't error out, then install plugins
-  vim --clean '+source ~/.vimrc' +PluginInstall +qall
+  vim +PluginInstall +qall
   .tmux/plugins/tpm/scripts/install_plugins.sh
   exit 0
 fi
