@@ -27,3 +27,7 @@ set undodir=~/.vim/undodir
 set updatetime=100
 syntax on
 
+" return to last position if it is stored
+if has("autocmd")
+      au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+endif
