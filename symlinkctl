@@ -97,6 +97,8 @@ disable() {
 
 if [[ "$1" == "enable" ]]; then
   mkdir -p ~/.ssh/control
+  chmod 0600 .ssh/config
+  chmod 0600 .ssh/environment
   for SYMLINK_PATH in "${TOP_LEVEL_DIRECTORIES_TO_TRAVERSE[@]}"; do
     enable "$(pwd)" "$HOME" "$SYMLINK_PATH"
   done

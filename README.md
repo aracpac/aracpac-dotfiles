@@ -8,11 +8,17 @@ as submodules, so make sure to clone with `--recursive` or run `git submodule up
 
 ## Manual
 
-Symlink the files to your home directory then install the Vim and tmux plugins by running:
+First, set the file modes for the files in the `.ssh` directory:
+```
+chmod 0600 .ssh/config
+chmod 0600 .ssh/environment
+```
+
+Now, symlink all files to your home directory then install the Vim and tmux plugins by running:
 
 ```
 vim --clean '+source ~/.vimrc' +PluginInstall +qall
-.tmux/plugins/tpm/scripts/install_plugins.sh
+~/.tmux/plugins/tpm/scripts/install_plugins.sh
 ```
 
 ## Automatic
